@@ -31,22 +31,40 @@ public class EmployeeService {
     @Transactional
     public ErrorKinds save(Employee employee) {
 
-        // パスワードチェック
-        ErrorKinds result = employeePasswordCheck(employee);
-        if (ErrorKinds.CHECK_OK != result) {
-            return result;
+        // 新規登録の場合
+        if (employee.getCreatedAt() == null) {
+            // パスワードチェック
+            ErrorKinds result = employeePasswordCheck(employee);
+            if (ErrorKinds.CHECK_OK != result) {
+                return result;
+            }
+            // 従業員番号重複チェック
+            if (findByCode(employee.getCode()) != null) {
+                return ErrorKinds.DUPLICATE_ERROR;
+            }
+            employee.setDeleteFlg(false);
+            LocalDateTime now = LocalDateTime.now();
+            employee.setCreatedAt(now);
+            employee.setUpdatedAt(now);
+
+        // 更新の場合
+        } else {
+            Employee empold = findByCode(employee.getCode());
+            // パスワード入力がない場合
+            if (employee.getPassword() == "") {
+                // DBから読みだしてセット
+                employee.setPassword(empold.getPassword());
+            // パスワード入力がある場合
+            } else {
+                // パスワードチェック
+                ErrorKinds result = employeePasswordCheck(employee);
+                if (ErrorKinds.CHECK_OK != result) {
+                    return result;
+                }
+            }
+            LocalDateTime now = LocalDateTime.now();
+            employee.setUpdatedAt(now);
         }
-
-        // 従業員番号重複チェック
-        if (findByCode(employee.getCode()) != null) {
-            return ErrorKinds.DUPLICATE_ERROR;
-        }
-
-        employee.setDeleteFlg(false);
-
-        LocalDateTime now = LocalDateTime.now();
-        employee.setCreatedAt(now);
-        employee.setUpdatedAt(now);
 
         employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
