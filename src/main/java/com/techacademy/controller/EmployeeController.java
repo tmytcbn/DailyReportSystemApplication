@@ -98,7 +98,6 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
-
     // 従業員更新画面
     @GetMapping(value = "/{code}/update")
     public String edit(@PathVariable String code, Employee employee, Model model) {
