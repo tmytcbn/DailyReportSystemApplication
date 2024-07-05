@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
-
+import com.techacademy.entity.Employee.Role;
 import com.techacademy.entity.Report;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
@@ -32,10 +32,15 @@ public class ReportsController {
 
     // 日報一覧画面
     @GetMapping
-    public String list(Model model) {
+    public String list(Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
+        if (userDetail.getEmployee().getRole() == Role.ADMIN) {
         model.addAttribute("listSize", reportService.findAll().size());
         model.addAttribute("reportList", reportService.findAll());
+        } else {
+        model.addAttribute("listSize", reportService.findByEmployee(userDetail.getEmployee()).size());
+        model.addAttribute("reportList", reportService.findByEmployee(userDetail.getEmployee()));
+        }
 
         return "reports/list";
     }
@@ -93,7 +98,8 @@ public class ReportsController {
             return edit(report.getId(), report, model);
         }
 
-        report.setEmployee(report.getEmployee());
+        Report reportOld = reportService.findById(report.getId());
+        report.setEmployee(reportOld.getEmployee());
 
         ErrorKinds result = reportService.save(report);
 

@@ -44,9 +44,19 @@ public class ReportService {
         }
 
         report.setDeleteFlg(false);
-        LocalDateTime now = LocalDateTime.now();
-        report.setCreatedAt(now);
-        report.setUpdatedAt(now);
+
+        // 新規登録の場合
+        if (report.getCreatedAt() == null) {
+            LocalDateTime now = LocalDateTime.now();
+            report.setCreatedAt(now);
+            report.setUpdatedAt(now);
+        // 更新の場合
+        } else {
+            Report reportOld = findById(report.getId());
+            report.setCreatedAt(reportOld.getCreatedAt());
+            LocalDateTime now = LocalDateTime.now();
+            report.setUpdatedAt(now);
+        }
 
         reportRepository.save(report);
         return ErrorKinds.SUCCESS;
@@ -66,6 +76,7 @@ public class ReportService {
 
     // 日報一覧表示処理
     public List<Report> findAll() {
+        
         return reportRepository.findAll();
     }
 
