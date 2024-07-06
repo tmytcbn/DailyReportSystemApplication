@@ -110,10 +110,10 @@ public class EmployeeController {
 
     // 従業員更新処理
     @PostMapping(value = "/{code}/update")
-    public String update(@Validated Employee employee, BindingResult res, Model model) {
+    public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
         // 入力チェック
         if (res.hasErrors()) {
-            return edit(employee.getCode(), employee, model);
+            return edit(code, employee, model);
         }
 
         ErrorKinds result = employeeService.save(employee);

@@ -87,15 +87,19 @@ public class ReportsController {
         if (report.getTitle() == null) {
             model.addAttribute("report", reportService.findById(id));
         }
+        if (report.getEmployee() == null) {
+            report.setEmployee(reportService.findById(id).getEmployee());
+        }
+
         return "reports/update";
     }
 
     // 日報更新処理
     @PostMapping(value = "/{id}/update")
-    public String update(@Validated Report report, BindingResult res, Model model) {
+    public String update(@PathVariable Integer id, @Validated Report report, BindingResult res, Model model) {
         // 入力チェック
         if (res.hasErrors()) {
-            return edit(report.getId(), report, model);
+            return edit(id, report, model);
         }
 
         Report reportOld = reportService.findById(report.getId());

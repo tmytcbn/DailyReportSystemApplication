@@ -35,9 +35,11 @@ public class ReportService {
         if (reportList != null) {
             // リストを1つずつ
             for (Report checkReport:reportList) {
+                if (checkReport.getId().equals(report.getId())) {
+                    continue;
                 // リストのうちの1つの日報の日付と今回入力した日付がイコール
                 // equals…記号の"=="だと厳密でないので、同じ型同士のものの完全一致を見る
-                if (checkReport.getReportDate().equals(report.getReportDate())) {
+                } else if (checkReport.getReportDate().equals(report.getReportDate())) {
                     return ErrorKinds.DATECHECK_ERROR;
                 }
             }
@@ -76,7 +78,7 @@ public class ReportService {
 
     // 日報一覧表示処理
     public List<Report> findAll() {
-        
+
         return reportRepository.findAll();
     }
 
